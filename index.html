@@ -197,9 +197,17 @@
                             <p id="resBaseFee" class="font-bold text-lg tracking-wide">Rp 0</p>
                         </div>
 
+                        <div id="sksTariffContainer" class="hidden bg-white/10 rounded-lg p-4 flex justify-between items-center backdrop-blur-sm border border-white/5">
+                            <div>
+                                <p class="text-blue-200 text-sm mb-1">Tarif Non-SIPAS</p>
+                                <p class="text-xs text-blue-300">Biaya per SKS sesuai Program Studi</p>
+                            </div>
+                            <p id="resSksTariff" class="font-bold text-lg tracking-wide">Rp 0 / SKS</p>
+                        </div>
+
                         <div id="adminFeeContainer" class="bg-white/10 rounded-lg p-4 flex justify-between items-center backdrop-blur-sm border border-white/5">
                             <div>
-                                <p class="text-blue-200 text-sm mb-1">Biaya Pendaftaran Maba</p>
+                                <p class="text-blue-200 text-sm mb-1">Biaya Pendaftaran</p>
                                 <p class="text-xs text-blue-300">Dibayarkan 1x di awal</p>
                             </div>
                             <p id="resAdminFee" class="font-bold text-lg tracking-wide">Rp 100.000</p>
@@ -296,7 +304,7 @@
                                 <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Semi</th>
                                 <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Penuh</th>
                                 <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Plus</th>
-                                <th class="p-4 border-b font-semibold border-l-2 border-gray-200 bg-yellow-50/50">Non-SIPAS (Per SKS)</th>
+                                <th class="p-4 border-b font-semibold border-l-2 border-gray-200 bg-yellow-50/50">Non-SIPAS (Tarif / SKS)</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-100 text-sm">
@@ -305,8 +313,10 @@
                     </table>
                 </div>
                 <div class="p-4 bg-gray-50 text-xs text-gray-500 border-t border-gray-200">
-                    * Tanda strip (-) menandakan skema layanan tidak tersedia untuk program studi tersebut sesuai Pedoman Universitas Terbuka 2026/2027.
-                </div>
+                     <p>* Tanda strip (-) menandakan skema layanan tidak tersedia untuk program studi tersebut sesuai Pedoman Universitas Terbuka 2026/2027.</p>
+                     <p>* Tarif Non-SIPAS berbeda menurut Program Studi dan dihitung per SKS.</p>
+                     <p>* Pada kalkulator, tarif Non-SIPAS otomatis mengikuti Program Studi yang dipilih.</p>
+                 </div>
             </div>
         </section>
 
@@ -346,7 +356,7 @@
 
             <div class="accordion-item border border-gray-200 rounded-lg mb-3 bg-white overflow-hidden transition-all">
                 <button class="w-full px-5 py-4 text-left font-semibold text-gray-800 flex justify-between items-center hover:bg-gray-50 focus:outline-none" onclick="toggleAccordion(this)">
-                    Biaya Penerbitan & Legalisasi Ijazah
+                    Biaya Legalisir Ijazah
                     <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transform transition-transform duration-200"></i>
                 </button>
                 <div class="accordion-content hidden px-5 py-4 border-t border-gray-100 text-gray-600 bg-gray-50/50">
@@ -384,7 +394,7 @@
                 Seluruh data disusun secara akurat merujuk pada Tabel 3.3, 3.4, dan 3.6 Dokumen Resmi.
             </p>
             <div class="mt-8 text-xs opacity-50">
-                &copy; 2026 Universitas Terbuka Prototype Concept. All rights reserved.
+                &copy; 2026 Biaya Pendidikan Prototype Concept. All rights reserved.
             </div>
         </div>
     </footer>
@@ -498,6 +508,8 @@
         const resDetailLabel = document.getElementById('resDetailLabel');
         const resBaseFee = document.getElementById('resBaseFee');
         const adminFeeContainer = document.getElementById('adminFeeContainer');
+        const sksTariffContainer = document.getElementById('sksTariffContainer');
+        const resSksTariff = document.getElementById('resSksTariff');
         const resAdminFee = document.getElementById('resAdminFee');
         const resTotalFee = document.getElementById('resTotalFee');
         const resCostNote = document.getElementById('resCostNote');
@@ -564,6 +576,8 @@
                 emptyState.classList.remove('hidden');
                 resultState.classList.add('hidden');
                 resTotalFee.textContent = 'Rp 0';
+                sksTariffContainer.classList.add('hidden');
+                resSksTariff.textContent = 'Rp 0 / SKS';
                 resCostNote.textContent = '* Belum termasuk biaya pengiriman.';
                 resEightFee.textContent = 'Rp 0';
                 resEightDetail.textContent = 'Estimasi biaya kuliah 8 semester';
@@ -579,7 +593,7 @@
             if (selLayanan.value === 'non_sipas') {
                 baseFee = prodiObj.sksFee * sks;
                 resTypeLabel.textContent = 'Uang Kuliah (Non-SIPAS)';
-                resDetailLabel.textContent = `${sks} SKS x ${formatRp(prodiObj.sksFee)}`;
+                resDetailLabel.textContent = `${sks} SKS × ${formatRp(prodiObj.sksFee)} / SKS`;
             } else {
                 baseFee = prodiObj[selLayanan.value];
                 resTypeLabel.textContent = 'Uang Kuliah (SIPAS)';
@@ -604,8 +618,11 @@
             resTotalFee.textContent = formatRp(eightSemesterTotal);
 
             if (selLayanan.value === 'non_sipas') {
+                sksTariffContainer.classList.remove('hidden');
+                resSksTariff.textContent = `${formatRp(prodiObj.sksFee)} / SKS`;
                 resCostNote.textContent = '* Belum termasuk biaya bahan ajar dan biaya pengiriman.';
             } else {
+                sksTariffContainer.classList.add('hidden');
                 resCostNote.textContent = '* Belum termasuk biaya pengiriman.';
             }
 
