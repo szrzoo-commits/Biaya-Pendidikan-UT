@@ -1,409 +1,332 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biaya Pendidikan - Universitas Terbuka</title>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        primary: '#00509E',
-                        accent: '#FFD100',
-                        'primary-dark': '#003b7a'
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Simulasi biaya pendidikan Universitas Terbuka 2026/2027 berdasarkan program studi dan skema layanan." />
+  <title>Simulasi Biaya Pendidikan | Universitas Terbuka</title>
 
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Custom CSS for Range Slider & Animations -->
-    <style>
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Range Slider Styling */
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: #00509E;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            ut: {
+              50:'#f3f8ff',100:'#e7f1ff',200:'#cfe3ff',300:'#a9ceff',400:'#74afff',
+              500:'#3f8df7',600:'#176fd6',700:'#00509E',800:'#063f79',900:'#0a335f',950:'#071f3d'
+            },
+            gold:'#FFD100'
+          },
+          boxShadow: {
+            soft: '0 18px 55px rgba(15, 42, 73, .10)',
+            panel: '0 24px 70px rgba(5, 49, 91, .16)'
+          }
         }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 8px;
-            cursor: pointer;
-            background: #e5e7eb;
-            border-radius: 4px;
-        }
-
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root { color-scheme: light; }
+    html { scroll-padding-top: 92px; }
+    body { background: #f6f8fb; }
+    .hide-scrollbar::-webkit-scrollbar { display:none; }
+    .hide-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
+    .fade-in { animation: fadeIn .28s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px);} to {opacity:1; transform:translateY(0);} }
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+    }
+    .glass { background: rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16); backdrop-filter: blur(14px); }
+    .field {
+      width:100%; border:1px solid #dfe7f1; background:#fff; border-radius:14px; padding:.88rem 1rem;
+      outline:none; transition:.2s ease; color:#0f172a;
+    }
+    .field:hover { border-color:#b8c8da; }
+    .field:focus { border-color:#176fd6; box-shadow:0 0 0 4px rgba(23,111,214,.10); }
+    .field:disabled { background:#f8fafc; color:#94a3b8; cursor:not-allowed; }
+    input[type=range] { accent-color:#00509E; }
+    input[type=range]::-webkit-slider-thumb { cursor:pointer; }
+    .money { font-variant-numeric: tabular-nums; }
+    .step-dot { box-shadow:0 0 0 5px rgba(0,80,158,.08); }
+    .soft-divider { background:linear-gradient(90deg,transparent,#dbe5ef,transparent); height:1px; }
+    .accordion-content { animation: fadeIn .18s ease-out; }
+    .toast { transform: translateY(16px); opacity:0; pointer-events:none; transition:.25s ease; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    @media (max-width: 1023px){ .result-sticky { position:static !important; } }
+    @media print {
+      body { background:#fff !important; }
+      .no-print, nav, header, #faq, #tabel-biaya, #biaya-lain, footer, #backToTop, #toast { display:none !important; }
+      main { max-width:none !important; padding:0 !important; margin:0 !important; }
+      #kalkulator { box-shadow:none !important; border:1px solid #cbd5e1 !important; margin:0 !important; }
+      #kalkulator > div { break-inside:avoid; }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-accent selection:text-primary">
+<body class="font-sans text-slate-800 antialiased selection:bg-gold selection:text-ut-950">
 
-    <nav class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3 cursor-pointer">
-                    <img src="https://www.ut.ac.id/wp-content/uploads/2015/11/logo-ut-small-transparent-300x226.png" alt="Logo Universitas Terbuka" class="h-12 w-auto object-contain" />
-                    <span class="font-bold text-xl text-primary hidden sm:block tracking-tight">Universitas Terbuka</span>
-                </div>
-                <div class="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-600">
-                    <a href="#" class="hover:text-primary transition-colors">Beranda</a>
-                    <a href="#kalkulator" class="text-primary">Simulasi Kalkulator</a>
-                    <a href="#tabel-biaya" class="hover:text-primary transition-colors">Biaya Per Fakultas</a>
-                    <a href="#faq" class="hover:text-primary transition-colors">FAQ & Skema</a>
-                </div>
-                <button class="md:hidden p-2 text-gray-600">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
+  <div class="no-print bg-ut-950 text-white text-xs sm:text-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+      <p class="flex items-center gap-2 text-slate-200"><i data-lucide="badge-info" class="w-4 h-4 text-gold"></i> Informasi biaya pendidikan Tahun Akademik 2026/2027</p>
+      <span class="hidden sm:inline-flex text-slate-400">Simulasi informatif · bukan tagihan resmi</span>
+    </div>
+  </div>
 
-    <header class="bg-primary text-white pt-20 pb-24 px-4 sm:px-6 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFD100" stroke-width="1"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
+  <nav class="no-print sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-[74px] flex items-center justify-between gap-6">
+        <a href="#" class="flex items-center gap-3 min-w-0">
+          <img src="https://www.ut.ac.id/wp-content/uploads/2015/11/logo-ut-small-transparent-300x226.png" alt="Logo Universitas Terbuka" class="h-12 w-auto object-contain" />
+          <div class="hidden sm:block min-w-0">
+            <p class="font-display font-extrabold text-ut-800 tracking-tight leading-none">Universitas Terbuka</p>
+            <p class="text-[11px] text-slate-500 mt-1 tracking-wide">SIMULASI BIAYA PENDIDIKAN</p>
+          </div>
+        </a>
+        <div class="hidden lg:flex items-center gap-1 text-sm font-semibold text-slate-600 bg-slate-50 p-1.5 rounded-full border border-slate-200">
+          <a href="#kalkulator" class="px-4 py-2 rounded-full hover:bg-white hover:text-ut-700 transition">Kalkulator</a>
+          <a href="#faq" class="px-4 py-2 rounded-full hover:bg-white hover:text-ut-700 transition">Skema Kuliah</a>
+          <a href="#tabel-biaya" class="px-4 py-2 rounded-full hover:bg-white hover:text-ut-700 transition">Daftar Biaya</a>
+          <a href="#biaya-lain" class="px-4 py-2 rounded-full hover:bg-white hover:text-ut-700 transition">Biaya Lain</a>
         </div>
-        
-        <div class="max-w-4xl mx-auto text-center relative z-10">
-            <span class="inline-block py-1 px-3 rounded-full bg-blue-800 text-accent text-xs font-bold tracking-wider mb-6 uppercase border border-blue-700">
-                Penerimaan Mahasiswa Baru 2026/2027
-            </span>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-                Biaya Pendidikan <br/>
-                <span class="text-accent">Universitas Terbuka</span>
-            </h1>
-            <p class="text-lg md:text-xl text-blue-100 mb-10 max-w-3xl mx-auto font-light leading-relaxed">
-                Sistem pendidikan fleksibel dengan skema Uang Kuliah Tunggal (UKT) terjangkau.
-                Hitung estimasi biaya kuliah Anda sesuai program studi dan layanan yang Anda butuhkan (Sistem Paket atau Non Paket).
-            </p>
-            <a href="#kalkulator" class="inline-flex items-center gap-2 bg-accent text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-400 hover:scale-105 transition-all shadow-lg hover:shadow-yellow-500/30">
-                Mulai Simulasi Biaya <i data-lucide="chevron-down" class="w-5 h-5 animate-bounce"></i>
+        <button id="mobileMenuBtn" class="lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-600" aria-label="Buka menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="hidden lg:hidden pb-4 grid grid-cols-2 gap-2 text-sm font-semibold text-slate-600">
+        <a href="#kalkulator" class="p-3 rounded-xl bg-slate-50">Kalkulator</a>
+        <a href="#faq" class="p-3 rounded-xl bg-slate-50">Skema Kuliah</a>
+        <a href="#tabel-biaya" class="p-3 rounded-xl bg-slate-50">Daftar Biaya</a>
+        <a href="#biaya-lain" class="p-3 rounded-xl bg-slate-50">Biaya Lain</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="no-print relative overflow-hidden bg-gradient-to-br from-ut-950 via-ut-800 to-ut-700 text-white hero-grid">
+    <div class="absolute -top-44 -right-32 w-[520px] h-[520px] rounded-full bg-gold/10 blur-3xl"></div>
+    <div class="absolute -bottom-56 -left-36 w-[520px] h-[520px] rounded-full bg-blue-300/10 blur-3xl"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative">
+      <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-12 items-center">
+        <div>
+          <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full glass text-xs font-bold tracking-wide text-gold mb-6">
+            <span class="w-2 h-2 rounded-full bg-gold"></span> PENERIMAAN MAHASISWA BARU 2026/2027
+          </span>
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] max-w-3xl">
+            Rencanakan biaya kuliah <span class="text-gold">dengan lebih jelas.</span>
+          </h1>
+          <p class="mt-6 text-base sm:text-lg text-blue-100/90 max-w-2xl leading-relaxed">
+            Pilih fakultas, program studi, dan skema layanan untuk melihat estimasi biaya semester pertama serta proyeksi pendidikan hingga 8 semester.
+          </p>
+          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+            <a href="#kalkulator" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gold text-ut-950 font-bold shadow-lg shadow-black/10 hover:-translate-y-0.5 transition">
+              Mulai simulasi <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
             </a>
+            <a href="#tabel-biaya" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl glass font-semibold hover:bg-white/15 transition">
+              Lihat daftar tarif <i data-lucide="table-2" class="w-4 h-4"></i>
+            </a>
+          </div>
         </div>
-    </header>
+        <div class="lg:justify-self-end w-full max-w-lg">
+          <div class="glass rounded-[28px] p-6 sm:p-7 shadow-panel">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-[.18em] text-blue-200 font-bold">Ringkasan Data</p>
+                <h2 class="font-display font-bold text-xl mt-2">Biaya Pendidikan Program S1</h2>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-gold flex items-center justify-center text-ut-950"><i data-lucide="graduation-cap" class="w-5 h-5"></i></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mt-7">
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><p class="font-display text-2xl font-extrabold">4</p><p class="text-[11px] text-blue-200 mt-1">Fakultas</p></div>
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><p id="programCount" class="font-display text-2xl font-extrabold">—</p><p class="text-[11px] text-blue-200 mt-1">Program studi</p></div>
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><p class="font-display text-2xl font-extrabold">2</p><p class="text-[11px] text-blue-200 mt-1">Skema utama</p></div>
+            </div>
+            <div class="mt-5 pt-5 border-t border-white/10 flex items-start gap-3 text-sm text-blue-100">
+              <i data-lucide="shield-check" class="w-5 h-5 text-gold shrink-0"></i>
+              <p>Tarif pada halaman ini disusun berdasarkan data biaya pendidikan 2026/2027 yang tertanam pada kalkulator.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <!-- Main Content Area -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 pb-20">
-        
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col lg:flex-row" id="kalkulator">
-            <!-- Kiri: Form Input -->
-            <div class="flex-1 p-6 lg:p-10 border-b lg:border-b-0 lg:border-r border-gray-100">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
-                        <i data-lucide="calculator" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900">Kalkulator Simulasi Biaya</h3>
-                </div>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+    <section id="kalkulator" class="bg-white rounded-[28px] border border-slate-200/90 shadow-soft overflow-hidden">
+      <div class="px-6 sm:px-8 lg:px-10 pt-8 pb-6 border-b border-slate-100 no-print">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+          <div>
+            <span class="inline-flex items-center gap-2 text-xs font-bold text-ut-700 uppercase tracking-[.16em]"><span class="w-7 h-px bg-gold"></span> Kalkulator</span>
+            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-950 mt-2">Simulasi Biaya Pendidikan</h2>
+            <p class="text-slate-500 mt-2 max-w-2xl">Kalkulator akan menampilkan skema yang memang tersedia untuk program studi yang dipilih.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="resetBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset</button>
+            <button id="printBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ut-700 text-white text-sm font-semibold hover:bg-ut-800 transition"><i data-lucide="printer" class="w-4 h-4"></i> Cetak / PDF</button>
+          </div>
+        </div>
+      </div>
 
-                <div class="space-y-5">
-                    <!-- Step 1 -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">1. Pilih Fakultas</label>
-                        <select id="selFakultas" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer">
-                            <option value="">-- Pilih Fakultas --</option>
-                            <!-- Options populated by JS -->
-                        </select>
-                    </div>
+      <div class="grid lg:grid-cols-[1.08fr_.92fr]">
+        <div class="p-6 sm:p-8 lg:p-10">
+          <div class="grid sm:grid-cols-3 gap-3 mb-8 no-print">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-ut-50 border border-ut-100"><span class="step-dot w-7 h-7 rounded-full bg-ut-700 text-white grid place-items-center text-xs font-bold">1</span><span class="text-xs font-semibold text-ut-900">Pilih program</span></div>
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100"><span class="w-7 h-7 rounded-full bg-white border border-slate-200 grid place-items-center text-xs font-bold text-slate-500">2</span><span class="text-xs font-semibold text-slate-600">Pilih skema</span></div>
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100"><span class="w-7 h-7 rounded-full bg-white border border-slate-200 grid place-items-center text-xs font-bold text-slate-500">3</span><span class="text-xs font-semibold text-slate-600">Lihat estimasi</span></div>
+          </div>
 
-                    <!-- Step 2 -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">2. Pilih Program Studi</label>
-                        <select id="selProdi" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-50 cursor-pointer" disabled>
-                            <option value="">-- Pilih Program Studi --</option>
-                            <!-- Options populated by JS -->
-                        </select>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">3. Pilih Skema Layanan</label>
-                        <select id="selLayanan" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-50 cursor-pointer" disabled>
-                            <option value="">-- Pilih Skema --</option>
-                            <!-- Options populated by JS -->
-                        </select>
-                    </div>
-
-                    <!-- Step 4 (Conditional) -->
-                    <div id="sksContainer" class="hidden fade-in">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">4. Jumlah SKS yang Diambil</label>
-                        <div class="flex items-center gap-4">
-                            <input type="range" id="jmlSks" min="12" max="24" value="18" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"/>
-                            <span id="jmlSksLabel" class="font-bold text-gray-900 min-w-[3rem] text-right whitespace-nowrap">18 SKS</span>
-                        </div>
-                    </div>
-
-                    <!-- Opsi Tambahan -->
-                    <div class="pt-4 border-t border-gray-100">
-                        <label class="flex items-start gap-3 cursor-pointer group">
-                            <input type="checkbox" id="isNewStudent" checked class="mt-1 w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer"/>
-                            <div>
-                                <span class="block font-semibold text-gray-800 group-hover:text-primary transition-colors">Saya Mahasiswa Baru (Semester 1)</span>
-                                <span class="text-xs text-gray-500">Termasuk Biaya Pendaftaran Mahasiswa Baru (Rp 100.000) sesuai Lampiran Tabel 3.6</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
+          <div class="space-y-5">
+            <div>
+              <label for="selFakultas" class="block text-sm font-bold text-slate-800 mb-2">Fakultas</label>
+              <div class="relative"><i data-lucide="building-2" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i><select id="selFakultas" class="field pl-11 appearance-none"><option value="">Pilih fakultas</option></select><i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i></div>
+            </div>
+            <div>
+              <label for="selProdi" class="block text-sm font-bold text-slate-800 mb-2">Program Studi</label>
+              <div class="relative"><i data-lucide="book-open" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i><select id="selProdi" class="field pl-11 appearance-none" disabled><option value="">Pilih program studi</option></select><i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i></div>
+            </div>
+            <div>
+              <label for="selLayanan" class="block text-sm font-bold text-slate-800 mb-2">Skema Layanan</label>
+              <div class="relative"><i data-lucide="layers-3" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i><select id="selLayanan" class="field pl-11 appearance-none" disabled><option value="">Pilih skema layanan</option></select><i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i></div>
             </div>
 
-            <!-- Kanan: Preview Card -->
-            <div class="flex-1 bg-gradient-to-br from-primary to-primary-dark p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden">
-                <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div>
-                    <h4 class="text-xl font-bold mb-6 flex items-center gap-2">
-                        <i data-lucide="wallet" class="w-6 h-6 text-accent"></i>
-                        Estimasi Biaya Pendidikan 8 Semester
-                    </h4>
-                    
-                    <div id="emptyState" class="h-48 flex flex-col items-center justify-center text-center opacity-70 border-2 border-dashed border-blue-400 rounded-xl p-6">
-                        <i data-lucide="info" class="w-8 h-8 mb-3 text-blue-200"></i>
-                        <p>Lengkapi formulir di sebelah kiri untuk melihat rincian biaya secara otomatis.</p>
-                    </div>
-
-                    <div id="resultState" class="hidden space-y-4 fade-in">
-                        <div class="bg-white/10 rounded-lg p-4 flex justify-between items-center backdrop-blur-sm border border-white/5">
-                            <div>
-                                <p id="resTypeLabel" class="text-blue-200 text-sm mb-1">Uang Kuliah (SIPAS)</p>
-                                <p id="resDetailLabel" class="text-xs text-blue-300">Paket Semester</p>
-                            </div>
-                            <p id="resBaseFee" class="font-bold text-lg tracking-wide">Rp 0</p>
-                        </div>
-
-                        <div id="sksTariffContainer" class="hidden bg-white/10 rounded-lg p-4 flex justify-between items-center backdrop-blur-sm border border-white/5">
-                            <div>
-                                <p class="text-blue-200 text-sm mb-1">Tarif Non-SIPAS</p>
-                                <p class="text-xs text-blue-300">Biaya per SKS sesuai Program Studi</p>
-                            </div>
-                            <p id="resSksTariff" class="font-bold text-lg tracking-wide">Rp 0 / SKS</p>
-                        </div>
-
-                        <div id="adminFeeContainer" class="bg-white/10 rounded-lg p-4 flex justify-between items-center backdrop-blur-sm border border-white/5">
-                            <div>
-                                <p class="text-blue-200 text-sm mb-1">Biaya Pendaftaran</p>
-                                <p class="text-xs text-blue-300">Dibayarkan 1x di awal</p>
-                            </div>
-                            <p id="resAdminFee" class="font-bold text-lg tracking-wide">Rp 100.000</p>
-                        </div>
-
-                        <div class="bg-white/10 rounded-lg p-4 border border-white/5">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-blue-200 text-sm mb-1">Estimasi Total 8 Semester</p>
-                                    <p id="resEightDetail" class="text-xs text-blue-300">Estimasi biaya kuliah 8 semester</p>
-                                </div>
-                                <p id="resEightFee" class="font-bold text-lg tracking-wide text-accent">Rp 0</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 pt-6 border-t border-blue-400/30">
-                    <p class="text-blue-200 text-sm mb-2">Total Estimasi Biaya (8 Semester)</p>
-                    <div id="resTotalFee" class="text-4xl lg:text-5xl font-extrabold text-accent tracking-tight">
-                        Rp 0
-                    </div>
-                    <div id="resCostNote" class="mt-3 text-xs text-blue-200 leading-relaxed">
-                        * Belum termasuk biaya pengiriman.
-                    </div>
-                </div>
+            <div id="sksContainer" class="hidden fade-in p-5 rounded-2xl bg-ut-50/70 border border-ut-100">
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <div><label for="jmlSks" class="block text-sm font-bold text-slate-800">Jumlah SKS</label><p class="text-xs text-slate-500 mt-1">Geser sesuai beban studi per semester.</p></div>
+                <span id="jmlSksLabel" class="px-3 py-1.5 rounded-lg bg-white border border-ut-100 font-bold text-ut-800 money whitespace-nowrap">18 SKS</span>
+              </div>
+              <input type="range" id="jmlSks" min="12" max="24" value="18" class="w-full" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-2"><span>12 SKS</span><span>24 SKS</span></div>
             </div>
+
+            <label class="flex items-start gap-3 p-4 rounded-2xl border border-slate-200 hover:border-ut-200 hover:bg-ut-50/30 transition cursor-pointer">
+              <input type="checkbox" id="isNewStudent" checked class="mt-1 w-4 h-4 accent-ut-700" />
+              <span><span class="block font-bold text-slate-800">Mahasiswa Baru</span><span class="block text-xs text-slate-500 mt-1 leading-relaxed">Tambahkan biaya pendaftaran mahasiswa baru Rp 100.000 satu kali di awal.</span></span>
+            </label>
+          </div>
+
+          <div class="mt-8 p-5 rounded-2xl bg-amber-50 border border-amber-200/80 flex gap-3">
+            <i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+            <p class="text-xs sm:text-sm text-amber-900 leading-relaxed"><strong>Catatan proyeksi:</strong> total 8 semester menggunakan asumsi tarif semester terpilih tetap sama selama 8 semester. Gunakan angka tersebut sebagai perencanaan awal, bukan nilai tagihan resmi.</p>
+          </div>
         </div>
 
-        <section class="mt-20" id="faq">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Memahami Skema Uang Kuliah UT</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Pilih fleksibilitas yang sesuai dengan waktu dan gaya belajar Anda. Biaya pendidikan dibagi menjadi dua skema utama.</p>
+        <aside class="bg-gradient-to-br from-ut-950 via-ut-900 to-ut-800 text-white p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gold/10 blur-3xl"></div>
+          <div class="result-sticky sticky top-28 relative">
+            <div class="flex items-start justify-between gap-5">
+              <div><p class="text-xs font-bold uppercase tracking-[.16em] text-blue-300">Hasil Simulasi</p><h3 class="font-display text-2xl font-bold mt-2">Ringkasan biaya</h3></div>
+              <div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/10 grid place-items-center"><i data-lucide="wallet-cards" class="w-5 h-5 text-gold"></i></div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Card SIPAS -->
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-                    <div class="w-14 h-14 bg-blue-100 text-primary rounded-xl flex items-center justify-center mb-6">
-                        <i data-lucide="book-open" class="w-7 h-7"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">SIPAS (Sistem Paket)</h3>
-                    <p class="text-gray-600 mb-6 min-h-[4rem]">Sistem Paket Semester dimana mahasiswa disuguhkan paket mata kuliah yang telah ditentukan untuk setiap semesternya.</p>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">UKT 3 (Non-TTM): Bahan ajar digital & cetak, UAS, Tuton.</span></li>
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">UKT 4 (Semi): Tambahan TTM wajib maksimal 3 MK.</span></li>
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">UKT 5 (Penuh): TTM wajib untuk seluruh mata kuliah.</span></li>
-                    </ul>
-                </div>
-
-                <!-- Card NON-SIPAS -->
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-                    <div class="w-14 h-14 bg-yellow-100 text-primary rounded-xl flex items-center justify-center mb-6">
-                        <i data-lucide="graduation-cap" class="w-7 h-7"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Non-SIPAS (Sistem SKS)</h3>
-                    <p class="text-gray-600 mb-6 min-h-[4rem]">Skema fleksibel berbasis SKS (Satuan Kredit Semester) dimana Anda dapat menentukan sendiri mata kuliah dan jumlah SKS.</p>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">Pembayaran dihitung per-SKS (Tabel 3.4).</span></li>
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">Cocok bagi yang butuh fleksibilitas beban kuliah semester.</span></li>
-                        <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 shrink-0"></i><span class="text-sm text-gray-700">Biaya bahan ajar (modul cetak) dibeli terpisah.</span></li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="tabel-biaya" class="mt-20">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <i data-lucide="book-open" class="w-5 h-5 text-primary"></i>
-                        Daftar Biaya Per Fakultas (Program S1)
-                    </h3>
-                    <div class="relative">
-                        <i data-lucide="search" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="searchInput" placeholder="Cari Program Studi..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full md:w-64 transition-shadow"/>
-                    </div>
-                </div>
-
-                <!-- Tabs -->
-                <div id="tabsContainer" class="flex overflow-x-auto border-b border-gray-200 hide-scrollbar bg-gray-50">
-                    <!-- Tabs rendered by JS -->
-                </div>
-
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[800px]">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-                                <th class="p-4 border-b font-semibold">Program Studi</th>
-                                <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Non-TTM</th>
-                                <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Semi</th>
-                                <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Penuh</th>
-                                <th class="p-4 border-b font-semibold bg-blue-50/50">SIPAS Plus</th>
-                                <th class="p-4 border-b font-semibold border-l-2 border-gray-200 bg-yellow-50/50">Non-SIPAS (Tarif / SKS)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-gray-100 text-sm">
-                            <!-- Rows rendered by JS -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-4 bg-gray-50 text-xs text-gray-500 border-t border-gray-200">
-                     <p>* Tanda strip (-) menandakan skema layanan tidak tersedia untuk program studi tersebut sesuai Pedoman Universitas Terbuka 2026/2027.</p>
-                     <p>* Tarif Non-SIPAS berbeda menurut Program Studi dan dihitung per SKS.</p>
-                     <p>* Pada kalkulator, tarif Non-SIPAS otomatis mengikuti Program Studi yang dipilih.</p>
-                 </div>
-            </div>
-        </section>
-
-        <section class="mt-20 max-w-4xl mx-auto">
-            <div class="text-center mb-10">
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Biaya Administrasi & Akademik Lainnya</h2>
-                <p class="text-gray-500 text-sm">Berdasarkan Ketentuan Tabel 3.6</p>
-            </div>
-            
-            <!-- Accordion Items -->
-            <div class="accordion-item border border-gray-200 rounded-lg mb-3 bg-white overflow-hidden transition-all">
-                <button class="w-full px-5 py-4 text-left font-semibold text-gray-800 flex justify-between items-center hover:bg-gray-50 focus:outline-none" onclick="toggleAccordion(this)">
-                    Biaya Pendaftaran Mahasiswa Baru
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transform transition-transform duration-200"></i>
-                </button>
-                <div class="accordion-content hidden px-5 py-4 border-t border-gray-100 text-gray-600 bg-gray-50/50">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-200 mb-2">
-                        <span>Per Pendaftaran</span>
-                        <span class="font-bold text-gray-900">Rp 100.000</span>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Dikenakan satu kali saat melakukan pendaftaran awal sebagai mahasiswa baru Universitas Terbuka.</p>
-                </div>
+            <div id="emptyState" class="mt-8 min-h-[280px] rounded-2xl border border-dashed border-blue-400/50 bg-white/[.04] flex flex-col items-center justify-center text-center p-8">
+              <div class="w-12 h-12 rounded-2xl bg-white/10 grid place-items-center mb-4"><i data-lucide="mouse-pointer-click" class="w-5 h-5 text-blue-200"></i></div>
+              <p class="font-semibold">Belum ada simulasi</p><p class="text-sm text-blue-200/80 mt-2 max-w-xs">Pilih fakultas, program studi, dan skema layanan untuk melihat estimasi.</p>
             </div>
 
-            <div class="accordion-item border border-gray-200 rounded-lg mb-3 bg-white overflow-hidden transition-all">
-                <button class="w-full px-5 py-4 text-left font-semibold text-gray-800 flex justify-between items-center hover:bg-gray-50 focus:outline-none" onclick="toggleAccordion(this)">
-                    Biaya Rekognisi Pembelajaran Lampau (RPL)
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transform transition-transform duration-200"></i>
-                </button>
-                <div class="accordion-content hidden px-5 py-4 border-t border-gray-100 text-gray-600 bg-gray-50/50">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-200 mb-2">
-                        <span>Per Pengusulan</span>
-                        <span class="font-bold text-gray-900">Rp 300.000</span>
-                    </div>
-                </div>
-            </div>
+            <div id="resultState" class="hidden fade-in mt-7">
+              <div class="flex flex-wrap gap-2 mb-5">
+                <span id="summaryFaculty" class="px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] text-blue-100"></span>
+                <span id="summaryProdi" class="px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] text-blue-100"></span>
+                <span id="summaryScheme" class="px-2.5 py-1 rounded-full bg-gold text-ut-950 text-[11px] font-bold"></span>
+              </div>
 
-            <div class="accordion-item border border-gray-200 rounded-lg mb-3 bg-white overflow-hidden transition-all">
-                <button class="w-full px-5 py-4 text-left font-semibold text-gray-800 flex justify-between items-center hover:bg-gray-50 focus:outline-none" onclick="toggleAccordion(this)">
-                    Biaya Legalisir Ijazah
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transform transition-transform duration-200"></i>
-                </button>
-                <div class="accordion-content hidden px-5 py-4 border-t border-gray-100 text-gray-600 bg-gray-50/50">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-200 mb-2">
-                        <span>Per Set (@10 Lembar)</span>
-                        <span class="font-bold text-gray-900">Rp 50.000</span>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Biaya per set tersebut meliputi untuk 3 (tiga) dokumen yaitu ijazah, transkrip, dan SKPI serta masing-masing mendapatkan 10 lembar salinan.</p>
-                </div>
-            </div>
+              <div class="rounded-2xl bg-white/[.07] border border-white/10 divide-y divide-white/10">
+                <div class="p-4 flex items-center justify-between gap-5"><div><p id="resTypeLabel" class="text-sm font-semibold">Uang Kuliah</p><p id="resDetailLabel" class="text-xs text-blue-300 mt-1"></p></div><p id="resBaseFee" class="font-display font-bold money text-right">Rp 0</p></div>
+                <div id="sksTariffContainer" class="hidden p-4 items-center justify-between gap-5"><div><p class="text-sm font-semibold">Tarif Non-SIPAS</p><p class="text-xs text-blue-300 mt-1">Tarif per SKS</p></div><p id="resSksTariff" class="font-display font-bold money text-right">Rp 0 / SKS</p></div>
+                <div id="adminFeeContainer" class="p-4 flex items-center justify-between gap-5"><div><p class="text-sm font-semibold">Biaya Pendaftaran</p><p class="text-xs text-blue-300 mt-1">Satu kali di awal</p></div><p id="resAdminFee" class="font-display font-bold money text-right">Rp 100.000</p></div>
+              </div>
 
-            <div class="accordion-item border border-gray-200 rounded-lg mb-3 bg-white overflow-hidden transition-all">
-                <button class="w-full px-5 py-4 text-left font-semibold text-gray-800 flex justify-between items-center hover:bg-gray-50 focus:outline-none" onclick="toggleAccordion(this)">
-                    Biaya Wisuda Program Sarjana
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transform transition-transform duration-200"></i>
-                </button>
-                <div class="accordion-content hidden px-5 py-4 border-t border-gray-100 text-gray-600 bg-gray-50/50">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
-                        <span>Per Mahasiswa</span>
-                        <span class="font-bold text-gray-900">Rp 750.000</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+              <div class="grid sm:grid-cols-2 gap-3 mt-4">
+                <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><p class="text-xs text-blue-300">Semester pertama</p><p id="resFirstSemester" class="font-display text-xl font-extrabold money mt-2">Rp 0</p></div>
+                <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><p class="text-xs text-blue-300">Tarif kuliah / semester</p><p id="resSemesterOnly" class="font-display text-xl font-extrabold money mt-2">Rp 0</p></div>
+              </div>
 
-    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800 text-center">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-center gap-3 mb-4 cursor-pointer">
-                <img src="https://www.ut.ac.id/wp-content/uploads/2015/11/logo-ut-small-transparent-300x226.png" alt="Logo Universitas Terbuka" class="h-14 w-auto object-contain" />
-                <span class="font-bold text-lg text-white">Universitas Terbuka</span>
+              <div class="mt-5 p-5 rounded-2xl bg-gold text-ut-950 shadow-lg shadow-black/10">
+                <div class="flex items-center justify-between gap-5"><div><p class="text-xs font-bold uppercase tracking-[.14em] opacity-70">Proyeksi 8 Semester</p><p id="resEightDetail" class="text-xs mt-1.5 opacity-70"></p></div><i data-lucide="calendar-range" class="w-5 h-5 shrink-0"></i></div>
+                <p id="resTotalFee" class="font-display text-3xl sm:text-4xl font-extrabold money mt-4">Rp 0</p>
+                <p id="resEightFee" class="hidden">Rp 0</p>
+              </div>
+              <p id="resCostNote" class="text-[11px] text-blue-300 mt-4 leading-relaxed">* Belum termasuk biaya pengiriman.</p>
+
+              <button id="copyBtn" class="no-print mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-sm font-semibold hover:bg-white/15 transition"><i data-lucide="copy" class="w-4 h-4"></i> Salin ringkasan simulasi</button>
             </div>
-            <p class="text-sm leading-relaxed">
-                Berdasarkan Pedoman Sistem Penyelenggaraan Universitas Terbuka 2026/2027.<br/>
-                Seluruh data disusun secara akurat merujuk pada Tabel 3.3, 3.4, dan 3.6 Dokumen Resmi.
-            </p>
-            <div class="mt-8 text-xs opacity-50">
-                &copy; 2026 Biaya Pendidikan Prototype Concept. All rights reserved.
-            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="faq" class="mt-20 no-print">
+      <div class="max-w-3xl mb-9">
+        <span class="text-xs font-bold text-ut-700 uppercase tracking-[.16em]">Kenali Pilihannya</span>
+        <h2 class="font-display text-3xl font-extrabold text-slate-950 mt-2">SIPAS atau Non-SIPAS?</h2>
+        <p class="text-slate-500 mt-3 leading-relaxed">Perbedaannya bukan hanya cara membayar, tetapi juga bagaimana beban studi dan layanan akademik diatur.</p>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-6">
+        <article class="bg-white rounded-[24px] border border-slate-200 p-7 sm:p-8 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-28 h-28 bg-ut-50 rounded-bl-[70px]"></div>
+          <div class="relative"><div class="w-12 h-12 rounded-2xl bg-ut-100 text-ut-700 grid place-items-center"><i data-lucide="package-check" class="w-5 h-5"></i></div><h3 class="font-display text-2xl font-bold text-slate-950 mt-5">SIPAS <span class="text-base font-semibold text-slate-400">Sistem Paket Semester</span></h3><p class="text-sm text-slate-500 mt-3 leading-relaxed">Mata kuliah ditawarkan dalam paket semester sehingga perencanaan studi lebih terstruktur.</p><div class="soft-divider my-6"></div><div class="grid sm:grid-cols-3 gap-3 text-sm"><div class="p-3 rounded-xl bg-slate-50"><strong class="block text-ut-800">Non-TTM</strong><span class="text-xs text-slate-500">UKT 3</span></div><div class="p-3 rounded-xl bg-slate-50"><strong class="block text-ut-800">Semi</strong><span class="text-xs text-slate-500">UKT 4</span></div><div class="p-3 rounded-xl bg-slate-50"><strong class="block text-ut-800">Penuh</strong><span class="text-xs text-slate-500">UKT 5</span></div></div></div>
+        </article>
+        <article class="bg-white rounded-[24px] border border-slate-200 p-7 sm:p-8 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-28 h-28 bg-amber-50 rounded-bl-[70px]"></div>
+          <div class="relative"><div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 grid place-items-center"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></div><h3 class="font-display text-2xl font-bold text-slate-950 mt-5">Non-SIPAS <span class="text-base font-semibold text-slate-400">Berbasis SKS</span></h3><p class="text-sm text-slate-500 mt-3 leading-relaxed">Jumlah mata kuliah dan SKS dapat direncanakan lebih fleksibel, dengan tarif dihitung per SKS.</p><div class="soft-divider my-6"></div><div class="space-y-3 text-sm text-slate-600"><p class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i> Pembayaran sesuai jumlah SKS yang diambil.</p><p class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i> Cocok untuk pengaturan beban studi yang lebih fleksibel.</p><p class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i> Bahan ajar cetak dibeli terpisah.</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="tabel-biaya" class="mt-20 no-print">
+      <div class="bg-white rounded-[26px] border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 sm:p-8 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+          <div><span class="text-xs font-bold text-ut-700 uppercase tracking-[.16em]">Referensi Tarif</span><h2 class="font-display text-2xl font-extrabold text-slate-950 mt-2">Daftar biaya per program studi</h2></div>
+          <div class="relative w-full lg:w-80"><i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="searchInput" type="search" placeholder="Cari program studi..." class="field pl-11 py-3 text-sm" /></div>
         </div>
-    </footer>
+        <div id="tabsContainer" class="flex overflow-x-auto hide-scrollbar border-b border-slate-200 bg-slate-50/70 px-2 sm:px-5"></div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[920px]">
+            <thead><tr class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[.09em]"><th class="p-4 sm:p-5 border-b font-bold sticky left-0 bg-slate-50 z-10">Program Studi</th><th class="p-4 sm:p-5 border-b font-bold">SIPAS Non-TTM</th><th class="p-4 sm:p-5 border-b font-bold">SIPAS Semi</th><th class="p-4 sm:p-5 border-b font-bold">SIPAS Penuh</th><th class="p-4 sm:p-5 border-b font-bold">SIPAS Plus</th><th class="p-4 sm:p-5 border-b font-bold bg-amber-50/70">Non-SIPAS / SKS</th></tr></thead>
+            <tbody id="tableBody" class="divide-y divide-slate-100 text-sm"></tbody>
+          </table>
+        </div>
+        <div class="p-5 sm:px-8 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 leading-relaxed space-y-1"><p>— menandakan skema layanan tidak tersedia pada program studi tersebut.</p><p>Tarif Non-SIPAS berbeda menurut program studi dan dihitung per SKS.</p></div>
+      </div>
+    </section>
 
-    <script>
-        // Initialize Icons
-        lucide.createIcons();
+    <section id="biaya-lain" class="mt-20 no-print max-w-5xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-9"><span class="text-xs font-bold text-ut-700 uppercase tracking-[.16em]">Biaya Tambahan</span><h2 class="font-display text-3xl font-extrabold text-slate-950 mt-2">Administrasi & akademik lainnya</h2><p class="text-slate-500 mt-3">Biaya ini tidak otomatis dimasukkan ke simulasi utama karena sifatnya bergantung pada kebutuhan mahasiswa.</p></div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="accordion-item bg-white border border-slate-200 rounded-2xl overflow-hidden"><button class="w-full p-5 flex items-center justify-between gap-4 text-left font-bold" onclick="toggleAccordion(this)"><span class="flex items-center gap-3"><span class="w-9 h-9 rounded-xl bg-ut-50 text-ut-700 grid place-items-center"><i data-lucide="user-plus" class="w-4 h-4"></i></span>Pendaftaran Mahasiswa Baru</span><i data-lucide="chevron-down" class="w-4 h-4 transition"></i></button><div class="accordion-content hidden px-5 pb-5"><div class="bg-slate-50 rounded-xl p-4 flex justify-between gap-4"><span class="text-sm text-slate-500">Per pendaftaran</span><strong class="money">Rp 100.000</strong></div></div></div>
+        <div class="accordion-item bg-white border border-slate-200 rounded-2xl overflow-hidden"><button class="w-full p-5 flex items-center justify-between gap-4 text-left font-bold" onclick="toggleAccordion(this)"><span class="flex items-center gap-3"><span class="w-9 h-9 rounded-xl bg-ut-50 text-ut-700 grid place-items-center"><i data-lucide="file-check-2" class="w-4 h-4"></i></span>Rekognisi Pembelajaran Lampau (RPL)</span><i data-lucide="chevron-down" class="w-4 h-4 transition"></i></button><div class="accordion-content hidden px-5 pb-5"><div class="bg-slate-50 rounded-xl p-4 flex justify-between gap-4"><span class="text-sm text-slate-500">Per pengusulan</span><strong class="money">Rp 300.000</strong></div></div></div>
+        <div class="accordion-item bg-white border border-slate-200 rounded-2xl overflow-hidden"><button class="w-full p-5 flex items-center justify-between gap-4 text-left font-bold" onclick="toggleAccordion(this)"><span class="flex items-center gap-3"><span class="w-9 h-9 rounded-xl bg-ut-50 text-ut-700 grid place-items-center"><i data-lucide="stamp" class="w-4 h-4"></i></span>Legalisir Ijazah</span><i data-lucide="chevron-down" class="w-4 h-4 transition"></i></button><div class="accordion-content hidden px-5 pb-5"><div class="bg-slate-50 rounded-xl p-4 flex justify-between gap-4"><span class="text-sm text-slate-500">Per set (@10 lembar)</span><strong class="money">Rp 50.000</strong></div><p class="text-xs text-slate-500 mt-3 leading-relaxed">Meliputi ijazah, transkrip, dan SKPI; masing-masing memperoleh 10 lembar salinan.</p></div></div>
+        <div class="accordion-item bg-white border border-slate-200 rounded-2xl overflow-hidden"><button class="w-full p-5 flex items-center justify-between gap-4 text-left font-bold" onclick="toggleAccordion(this)"><span class="flex items-center gap-3"><span class="w-9 h-9 rounded-xl bg-ut-50 text-ut-700 grid place-items-center"><i data-lucide="award" class="w-4 h-4"></i></span>Wisuda Program Sarjana</span><i data-lucide="chevron-down" class="w-4 h-4 transition"></i></button><div class="accordion-content hidden px-5 pb-5"><div class="bg-slate-50 rounded-xl p-4 flex justify-between gap-4"><span class="text-sm text-slate-500">Per mahasiswa</span><strong class="money">Rp 750.000</strong></div></div></div>
+      </div>
+    </section>
 
-        // Data Definitions (100% Accurate)
+    <section class="mt-20 no-print rounded-[26px] bg-ut-50 border border-ut-100 p-6 sm:p-8 flex flex-col md:flex-row md:items-center gap-6">
+      <div class="w-12 h-12 rounded-2xl bg-white border border-ut-100 text-ut-700 grid place-items-center shrink-0"><i data-lucide="file-lock-2" class="w-5 h-5"></i></div>
+      <div class="flex-1"><h3 class="font-display text-lg font-bold text-ut-950">Gunakan sebagai alat bantu perencanaan</h3><p class="text-sm text-slate-600 mt-1 leading-relaxed">Nominal simulasi dapat berbeda dari tagihan aktual apabila terjadi perubahan tarif, perubahan beban SKS, atau layanan akademik yang dipilih pada semester berikutnya.</p></div>
+      <a href="#kalkulator" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white border border-ut-100 text-ut-700 text-sm font-bold hover:border-ut-300 transition">Hitung ulang <i data-lucide="arrow-up" class="w-4 h-4"></i></a>
+    </section>
+  </main>
+
+  <footer class="no-print bg-ut-950 text-slate-400 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div class="flex items-center gap-3"><img src="https://www.ut.ac.id/wp-content/uploads/2015/11/logo-ut-small-transparent-300x226.png" alt="Logo Universitas Terbuka" class="h-12 w-auto" /><div><p class="font-display font-bold text-white">Universitas Terbuka</p><p class="text-xs mt-1">Simulasi Biaya Pendidikan 2026/2027</p></div></div>
+      <div class="md:text-right text-xs leading-relaxed"><p>Berdasarkan data biaya pendidikan yang digunakan pada prototipe.</p><p class="mt-1 text-slate-500">© 2026 · Prototype Concept</p></div>
+    </div>
+  </footer>
+
+  <button id="backToTop" class="no-print fixed bottom-5 right-5 w-11 h-11 rounded-2xl bg-ut-800 text-white shadow-lg grid place-items-center opacity-0 pointer-events-none transition z-40" aria-label="Kembali ke atas"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+  <div id="toast" class="toast no-print fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-sm px-4 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i><span id="toastText">Ringkasan disalin.</span></div>
+
+  <script>
         const FACULTIES = [
             { id: 'FEB', name: 'Fakultas Ekonomi dan Bisnis' },
             { id: 'FHISIP', name: 'Fakultas Hukum, Ilmu Sosial, dan Ilmu Politik' },
@@ -473,231 +396,228 @@
         ];
 
         const ADMIN_FEES = { pendaftaran: 100000 };
-        
-        const formatRp = (angka) => {
-            if (angka === null || angka === undefined) return '-';
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        };
 
-        // Accordion Logic
-        window.toggleAccordion = function(button) {
-            const content = button.nextElementSibling;
-            const icon = button.querySelector('i');
-            
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.classList.add('rotate-180');
-            } else {
-                content.classList.add('hidden');
-                icon.classList.remove('rotate-180');
-            }
-        };
+    const formatRp = angka => {
+      if (angka === null || angka === undefined) return '—';
+      return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 }).format(angka);
+    };
 
-        // DOM Elements
-        const selFakultas = document.getElementById('selFakultas');
-        const selProdi = document.getElementById('selProdi');
-        const selLayanan = document.getElementById('selLayanan');
-        const sksContainer = document.getElementById('sksContainer');
-        const jmlSks = document.getElementById('jmlSks');
-        const jmlSksLabel = document.getElementById('jmlSksLabel');
-        const isNewStudent = document.getElementById('isNewStudent');
-        
-        const emptyState = document.getElementById('emptyState');
-        const resultState = document.getElementById('resultState');
-        const resTypeLabel = document.getElementById('resTypeLabel');
-        const resDetailLabel = document.getElementById('resDetailLabel');
-        const resBaseFee = document.getElementById('resBaseFee');
-        const adminFeeContainer = document.getElementById('adminFeeContainer');
-        const sksTariffContainer = document.getElementById('sksTariffContainer');
-        const resSksTariff = document.getElementById('resSksTariff');
-        const resAdminFee = document.getElementById('resAdminFee');
-        const resTotalFee = document.getElementById('resTotalFee');
-        const resCostNote = document.getElementById('resCostNote');
-        const resEightFee = document.getElementById('resEightFee');
-        const resEightDetail = document.getElementById('resEightDetail');
+    const selFakultas = document.getElementById('selFakultas');
+    const selProdi = document.getElementById('selProdi');
+    const selLayanan = document.getElementById('selLayanan');
+    const sksContainer = document.getElementById('sksContainer');
+    const jmlSks = document.getElementById('jmlSks');
+    const jmlSksLabel = document.getElementById('jmlSksLabel');
+    const isNewStudent = document.getElementById('isNewStudent');
+    const emptyState = document.getElementById('emptyState');
+    const resultState = document.getElementById('resultState');
+    const resTypeLabel = document.getElementById('resTypeLabel');
+    const resDetailLabel = document.getElementById('resDetailLabel');
+    const resBaseFee = document.getElementById('resBaseFee');
+    const adminFeeContainer = document.getElementById('adminFeeContainer');
+    const sksTariffContainer = document.getElementById('sksTariffContainer');
+    const resSksTariff = document.getElementById('resSksTariff');
+    const resTotalFee = document.getElementById('resTotalFee');
+    const resCostNote = document.getElementById('resCostNote');
+    const resEightFee = document.getElementById('resEightFee');
+    const resEightDetail = document.getElementById('resEightDetail');
+    const resFirstSemester = document.getElementById('resFirstSemester');
+    const resSemesterOnly = document.getElementById('resSemesterOnly');
+    const summaryFaculty = document.getElementById('summaryFaculty');
+    const summaryProdi = document.getElementById('summaryProdi');
+    const summaryScheme = document.getElementById('summaryScheme');
 
-        // Init Fakultas Dropdown
-        FACULTIES.forEach(f => {
-            selFakultas.add(new Option(f.name, f.id));
+    document.getElementById('programCount').textContent = PRODI_DATA.length;
+    FACULTIES.forEach(f => selFakultas.add(new Option(f.name, f.id)));
+
+    function resetResult() {
+      emptyState.classList.remove('hidden');
+      resultState.classList.add('hidden');
+      resTotalFee.textContent = 'Rp 0';
+      resFirstSemester.textContent = 'Rp 0';
+      resSemesterOnly.textContent = 'Rp 0';
+      sksTariffContainer.classList.add('hidden');
+      sksTariffContainer.classList.remove('flex');
+    }
+
+    selFakultas.addEventListener('change', () => {
+      selProdi.innerHTML = '<option value="">Pilih program studi</option>';
+      selLayanan.innerHTML = '<option value="">Pilih skema layanan</option>';
+      selProdi.disabled = !selFakultas.value;
+      selLayanan.disabled = true;
+      sksContainer.classList.add('hidden');
+      if (selFakultas.value) {
+        PRODI_DATA.filter(p => p.faculty === selFakultas.value).forEach(p => selProdi.add(new Option(p.name, p.id)));
+      }
+      calculate();
+    });
+
+    selProdi.addEventListener('change', () => {
+      selLayanan.innerHTML = '<option value="">Pilih skema layanan</option>';
+      selLayanan.disabled = !selProdi.value;
+      sksContainer.classList.add('hidden');
+      if (selProdi.value) {
+        const prodiObj = PRODI_DATA.find(p => p.id == selProdi.value);
+        LAYANAN_OPTIONS.forEach(opt => {
+          if (opt.id !== 'non_sipas' && prodiObj[opt.id] === null) return;
+          if (opt.id === 'non_sipas' && prodiObj.sksFee === null) return;
+          selLayanan.add(new Option(opt.name, opt.id));
         });
+      }
+      calculate();
+    });
 
-        // Event Listeners
-        selFakultas.addEventListener('change', () => {
-            selProdi.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
-            selLayanan.innerHTML = '<option value="">-- Pilih Skema --</option>';
-            selProdi.disabled = !selFakultas.value;
-            selLayanan.disabled = true;
-            sksContainer.classList.add('hidden');
-            
-            if (selFakultas.value) {
-                const filtered = PRODI_DATA.filter(p => p.faculty === selFakultas.value);
-                filtered.forEach(p => selProdi.add(new Option(p.name, p.id)));
-            }
-            calculate();
-        });
+    selLayanan.addEventListener('change', () => {
+      sksContainer.classList.toggle('hidden', selLayanan.value !== 'non_sipas');
+      calculate();
+    });
+    jmlSks.addEventListener('input', e => { jmlSksLabel.textContent = `${e.target.value} SKS`; calculate(); });
+    isNewStudent.addEventListener('change', calculate);
 
-        selProdi.addEventListener('change', () => {
-            selLayanan.innerHTML = '<option value="">-- Pilih Skema --</option>';
-            selLayanan.disabled = !selProdi.value;
-            sksContainer.classList.add('hidden');
-            
-            if (selProdi.value) {
-                const prodiObj = PRODI_DATA.find(p => p.id == selProdi.value);
-                LAYANAN_OPTIONS.forEach(opt => {
-                    // Cek ketersediaan layanan untuk prodi tertentu
-                    if (opt.id !== 'non_sipas' && prodiObj[opt.id] === null) return;
-                    if (opt.id === 'non_sipas' && prodiObj.sksFee === null) return;
-                    
-                    selLayanan.add(new Option(opt.name, opt.id));
-                });
-            }
-            calculate();
-        });
+    function calculate() {
+      if (!selProdi.value || !selLayanan.value) { resetResult(); return; }
+      const prodiObj = PRODI_DATA.find(p => p.id == selProdi.value);
+      const sks = parseInt(jmlSks.value, 10);
+      const isNew = isNewStudent.checked;
+      const schemeObj = LAYANAN_OPTIONS.find(x => x.id === selLayanan.value);
+      let baseFee = 0;
 
-        selLayanan.addEventListener('change', () => {
-            if (selLayanan.value === 'non_sipas') {
-                sksContainer.classList.remove('hidden');
-            } else {
-                sksContainer.classList.add('hidden');
-            }
-            calculate();
-        });
+      if (selLayanan.value === 'non_sipas') {
+        baseFee = prodiObj.sksFee * sks;
+        resTypeLabel.textContent = 'Uang Kuliah (Non-SIPAS)';
+        resDetailLabel.textContent = `${sks} SKS × ${formatRp(prodiObj.sksFee)} / SKS`;
+        sksTariffContainer.classList.remove('hidden');
+        sksTariffContainer.classList.add('flex');
+        resSksTariff.textContent = `${formatRp(prodiObj.sksFee)} / SKS`;
+        resCostNote.textContent = '* Belum termasuk biaya bahan ajar cetak dan biaya pengiriman.';
+      } else {
+        baseFee = prodiObj[selLayanan.value];
+        resTypeLabel.textContent = 'Uang Kuliah (SIPAS)';
+        resDetailLabel.textContent = schemeObj ? schemeObj.name : 'Paket Semester';
+        sksTariffContainer.classList.add('hidden');
+        sksTariffContainer.classList.remove('flex');
+        resCostNote.textContent = '* Belum termasuk biaya pengiriman dan biaya lain yang bersifat kondisional.';
+      }
 
-        jmlSks.addEventListener('input', (e) => {
-            jmlSksLabel.textContent = `${e.target.value} SKS`;
-            calculate();
-        });
+      const adminFee = isNew ? ADMIN_FEES.pendaftaran : 0;
+      const firstSemesterTotal = baseFee + adminFee;
+      const eightSemesterTotal = (baseFee * 8) + adminFee;
 
-        isNewStudent.addEventListener('change', calculate);
+      document.getElementById('resAdminFee').textContent = formatRp(adminFee);
+      adminFeeContainer.classList.toggle('hidden', adminFee === 0);
+      adminFeeContainer.classList.toggle('flex', adminFee > 0);
+      resBaseFee.textContent = formatRp(baseFee);
+      resSemesterOnly.textContent = formatRp(baseFee);
+      resFirstSemester.textContent = formatRp(firstSemesterTotal);
+      resTotalFee.textContent = formatRp(eightSemesterTotal);
+      resEightFee.textContent = formatRp(eightSemesterTotal);
+      resEightDetail.textContent = `${formatRp(baseFee)} × 8${adminFee > 0 ? ' + Biaya Pendaftaran' : ''}`;
 
-        // Core Calculation
-        function calculate() {
-            if (!selProdi.value || !selLayanan.value) {
-                emptyState.classList.remove('hidden');
-                resultState.classList.add('hidden');
-                resTotalFee.textContent = 'Rp 0';
-                sksTariffContainer.classList.add('hidden');
-                resSksTariff.textContent = 'Rp 0 / SKS';
-                resCostNote.textContent = '* Belum termasuk biaya pengiriman.';
-                resEightFee.textContent = 'Rp 0';
-                resEightDetail.textContent = 'Estimasi biaya kuliah 8 semester';
-                return;
-            }
+      const faculty = FACULTIES.find(f => f.id === prodiObj.faculty);
+      summaryFaculty.textContent = faculty ? faculty.id : prodiObj.faculty;
+      summaryProdi.textContent = prodiObj.name;
+      summaryScheme.textContent = schemeObj ? schemeObj.name : selLayanan.value;
 
-            const prodiObj = PRODI_DATA.find(p => p.id == selProdi.value);
-            const sks = parseInt(jmlSks.value);
-            const isNew = isNewStudent.checked;
-            
-            let baseFee = 0;
-            
-            if (selLayanan.value === 'non_sipas') {
-                baseFee = prodiObj.sksFee * sks;
-                resTypeLabel.textContent = 'Uang Kuliah (Non-SIPAS)';
-                resDetailLabel.textContent = `${sks} SKS × ${formatRp(prodiObj.sksFee)} / SKS`;
-            } else {
-                baseFee = prodiObj[selLayanan.value];
-                resTypeLabel.textContent = 'Uang Kuliah (SIPAS)';
-                resDetailLabel.textContent = 'Paket Semester';
-            }
+      emptyState.classList.add('hidden');
+      resultState.classList.remove('hidden');
+    }
 
-            const adminFee = isNew ? ADMIN_FEES.pendaftaran : 0;
-            const total = baseFee + adminFee;
-            const eightSemesterTotal = (baseFee * 8) + adminFee;
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      selFakultas.value = '';
+      selProdi.innerHTML = '<option value="">Pilih program studi</option>';
+      selLayanan.innerHTML = '<option value="">Pilih skema layanan</option>';
+      selProdi.disabled = true;
+      selLayanan.disabled = true;
+      jmlSks.value = 18;
+      jmlSksLabel.textContent = '18 SKS';
+      isNewStudent.checked = true;
+      sksContainer.classList.add('hidden');
+      resetResult();
+      selFakultas.focus();
+    });
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
 
-            // Render Results
-            resBaseFee.textContent = formatRp(baseFee);
-            
-            if (adminFee > 0) {
-                adminFeeContainer.classList.remove('hidden');
-                adminFeeContainer.classList.add('flex');
-            } else {
-                adminFeeContainer.classList.add('hidden');
-                adminFeeContainer.classList.remove('flex');
-            }
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastText').textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
 
-            resTotalFee.textContent = formatRp(eightSemesterTotal);
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const faculty = FACULTIES.find(f => f.id === selFakultas.value);
+      const prodi = PRODI_DATA.find(p => p.id == selProdi.value);
+      const scheme = LAYANAN_OPTIONS.find(x => x.id === selLayanan.value);
+      const text = [
+        'Simulasi Biaya Pendidikan Universitas Terbuka 2026/2027',
+        `Fakultas: ${faculty?.name || '-'}`,
+        `Program Studi: ${prodi?.name || '-'}`,
+        `Skema: ${scheme?.name || '-'}`,
+        `Semester pertama: ${resFirstSemester.textContent}`,
+        `Tarif kuliah per semester: ${resSemesterOnly.textContent}`,
+        `Proyeksi 8 semester: ${resTotalFee.textContent}`,
+        'Catatan: proyeksi 8 semester mengasumsikan tarif semester terpilih tetap sama.'
+      ].join('\n');
+      try { await navigator.clipboard.writeText(text); showToast('Ringkasan simulasi disalin.'); }
+      catch { showToast('Browser tidak mengizinkan penyalinan otomatis.'); }
+    });
 
-            if (selLayanan.value === 'non_sipas') {
-                sksTariffContainer.classList.remove('hidden');
-                resSksTariff.textContent = `${formatRp(prodiObj.sksFee)} / SKS`;
-                resCostNote.textContent = '* Belum termasuk biaya bahan ajar dan biaya pengiriman.';
-            } else {
-                sksTariffContainer.classList.add('hidden');
-                resCostNote.textContent = '* Belum termasuk biaya pengiriman.';
-            }
+    window.toggleAccordion = button => {
+      const content = button.nextElementSibling;
+      const icon = button.querySelector('svg') || button.querySelector('i');
+      content.classList.toggle('hidden');
+      if (icon) icon.classList.toggle('rotate-180');
+    };
 
-            resEightFee.textContent = formatRp(eightSemesterTotal);
-            resEightDetail.textContent = `${formatRp(baseFee)} × 8 semester${adminFee > 0 ? ' + biaya pendaftaran 1x' : ''}`;
+    let activeTab = 'FEB';
+    let searchQuery = '';
+    const tabsContainer = document.getElementById('tabsContainer');
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('tableBody');
 
-            emptyState.classList.add('hidden');
-            resultState.classList.remove('hidden');
-        }
+    function renderTabs() {
+      tabsContainer.innerHTML = FACULTIES.map(fac => `
+        <button onclick="setActiveTab('${fac.id}')" class="px-4 sm:px-5 py-4 text-sm font-bold whitespace-nowrap border-b-2 transition ${activeTab === fac.id ? 'border-ut-700 text-ut-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-800'}">${fac.id}</button>
+      `).join('');
+    }
 
-        let activeTab = 'FEB';
-        let searchQuery = '';
-        
-        const tabsContainer = document.getElementById('tabsContainer');
-        const searchInput = document.getElementById('searchInput');
-        const tableBody = document.getElementById('tableBody');
+    function renderTable() {
+      const q = searchQuery.toLowerCase();
+      const filtered = PRODI_DATA.filter(p => p.faculty === activeTab && p.name.toLowerCase().includes(q));
+      if (!filtered.length) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-slate-500">Tidak ada program studi yang cocok.</td></tr>';
+        return;
+      }
+      tableBody.innerHTML = filtered.map(row => `
+        <tr class="hover:bg-ut-50/50 transition">
+          <td class="p-4 sm:p-5 font-semibold text-slate-900 sticky left-0 bg-white">${row.name}</td>
+          <td class="p-4 sm:p-5 text-slate-600 money">${formatRp(row.ukt3)}</td>
+          <td class="p-4 sm:p-5 text-slate-600 money">${formatRp(row.ukt4)}</td>
+          <td class="p-4 sm:p-5 text-slate-600 money">${formatRp(row.ukt5)}</td>
+          <td class="p-4 sm:p-5 text-slate-600 money">${formatRp(row.ukt6)}</td>
+          <td class="p-4 sm:p-5 text-slate-900 font-bold money bg-amber-50/40">${formatRp(row.sksFee)}</td>
+        </tr>
+      `).join('');
+    }
+    window.setActiveTab = facId => { activeTab = facId; renderTabs(); renderTable(); };
+    searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTable(); });
 
-        function renderTabs() {
-            tabsContainer.innerHTML = FACULTIES.map(fac => `
-                <button 
-                    onclick="setActiveTab('${fac.id}')"
-                    class="px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors border-b-2 ${
-                        activeTab === fac.id 
-                            ? 'border-primary text-primary bg-white' 
-                            : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-100'
-                    }"
-                >
-                    ${fac.id}
-                </button>
-            `).join('');
-        }
+    const mobileMenu = document.getElementById('mobileMenu');
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
-        function renderTable() {
-            const filtered = PRODI_DATA.filter(p => 
-                p.faculty === activeTab && 
-                p.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      const show = window.scrollY > 700;
+      backToTop.classList.toggle('opacity-0', !show);
+      backToTop.classList.toggle('pointer-events-none', !show);
+    }, { passive:true });
+    backToTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
 
-            if (filtered.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
-                            Tidak ada program studi yang cocok dengan pencarian.
-                        </td>
-                    </tr>`;
-                return;
-            }
-
-            tableBody.innerHTML = filtered.map(row => `
-                <tr class="hover:bg-blue-50/30 transition-colors">
-                    <td class="p-4 font-medium text-gray-900">${row.name}</td>
-                    <td class="p-4 text-gray-700">${formatRp(row.ukt3)}</td>
-                    <td class="p-4 text-gray-700">${formatRp(row.ukt4)}</td>
-                    <td class="p-4 text-gray-700">${formatRp(row.ukt5)}</td>
-                    <td class="p-4 text-gray-700">${formatRp(row.ukt6)}</td>
-                    <td class="p-4 text-gray-900 font-semibold border-l-2 border-gray-100 bg-yellow-50/20">${formatRp(row.sksFee)}</td>
-                </tr>
-            `).join('');
-        }
-
-        window.setActiveTab = function(facId) {
-            activeTab = facId;
-            renderTabs();
-            renderTable();
-        };
-
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value;
-            renderTable();
-        });
-
-        // Init Table
-        renderTabs();
-        renderTable();
-
-    </script>
+    renderTabs();
+    renderTable();
+    lucide.createIcons();
+  </script>
 </body>
 </html>
