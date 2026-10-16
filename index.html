@@ -63,12 +63,66 @@
     .toast { transform: translateY(16px); opacity:0; pointer-events:none; transition:.25s ease; }
     .toast.show { transform:translateY(0); opacity:1; }
     @media (max-width: 1023px){ .result-sticky { position:static !important; } }
+    
+    /* Pengaturan Cetak PDF 1 Halaman A4 */
     @media print {
-      body { background:#fff !important; }
-      .no-print, nav, header, #faq, #tabel-biaya, #biaya-lain, footer, #backToTop, #toast { display:none !important; }
-      main { max-width:none !important; padding:0 !important; margin:0 !important; }
-      #kalkulator { box-shadow:none !important; border:1px solid #cbd5e1 !important; margin:0 !important; }
-      #kalkulator > div { break-inside:avoid; }
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+      html, body {
+        background: #fff !important;
+        font-size: 11px !important;
+        color: #0f172a !important;
+        height: 100%;
+        overflow: hidden;
+      }
+      .no-print, nav, header, #faq, #tabel-biaya, #biaya-lain, footer, #backToTop, #toast {
+        display: none !important;
+      }
+      main {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #kalkulator {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        margin: 0 !important;
+        border-radius: 12px !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      #kalkulator > div:first-child {
+        padding: 10px 16px !important;
+      }
+      .p-6, .p-8, .p-10, .p-5, .p-4 {
+        padding: 10px 14px !important;
+      }
+      .space-y-5 > * + * {
+        margin-top: 8px !important;
+      }
+      .mt-8, .mt-7, .mt-5 {
+        margin-top: 8px !important;
+      }
+      .grid {
+        gap: 8px !important;
+      }
+      .field {
+        padding: 0.4rem 0.6rem !important;
+        border-radius: 8px !important;
+        font-size: 11px !important;
+      }
+      aside {
+        background: #071f3d !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        border-radius: 16px !important;
+      }
+      aside * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
     }
   </style>
 </head>
@@ -476,7 +530,7 @@
       sksContainer.classList.toggle('hidden', selLayanan.value !== 'non_sipas');
       calculate();
     });
-    
+
     sksInputs.forEach(input => {
       input.addEventListener('input', () => {
         const semIndex = parseInt(input.id.replace('sks', ''));
