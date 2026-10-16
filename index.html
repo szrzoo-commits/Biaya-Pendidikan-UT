@@ -56,8 +56,6 @@
     .field:hover { border-color:#b8c8da; }
     .field:focus { border-color:#176fd6; box-shadow:0 0 0 4px rgba(23,111,214,.10); }
     .field:disabled { background:#f8fafc; color:#94a3b8; cursor:not-allowed; }
-    input[type=range] { accent-color:#00509E; }
-    input[type=range]::-webkit-slider-thumb { cursor:pointer; }
     .money { font-variant-numeric: tabular-nums; }
     .step-dot { box-shadow:0 0 0 5px rgba(0,80,158,.08); }
     .soft-divider { background:linear-gradient(90deg,transparent,#dbe5ef,transparent); height:1px; }
@@ -199,12 +197,20 @@
             </div>
 
             <div id="sksContainer" class="hidden fade-in p-5 rounded-2xl bg-ut-50/70 border border-ut-100">
-              <div class="flex items-center justify-between gap-4 mb-4">
-                <div><label for="jmlSks" class="block text-sm font-bold text-slate-800">Jumlah SKS</label><p class="text-xs text-slate-500 mt-1">Geser sesuai beban studi per semester.</p></div>
-                <span id="jmlSksLabel" class="px-3 py-1.5 rounded-lg bg-white border border-ut-100 font-bold text-ut-800 money whitespace-nowrap">18 SKS</span>
+              <div class="mb-4">
+                <label class="block text-sm font-bold text-slate-800">Rencana SKS per Semester</label>
+                <p class="text-xs text-slate-500 mt-1">Smt 1-2 maks 20 SKS. Smt 3-8 maks 24 SKS.</p>
               </div>
-              <input type="range" id="jmlSks" min="12" max="24" value="18" class="w-full" />
-              <div class="flex justify-between text-[11px] text-slate-400 mt-2"><span>12 SKS</span><span>24 SKS</span></div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 1</label><input type="number" id="sks1" class="field py-1.5 px-2 text-sm text-center" min="12" max="20" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 2</label><input type="number" id="sks2" class="field py-1.5 px-2 text-sm text-center" min="12" max="20" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 3</label><input type="number" id="sks3" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 4</label><input type="number" id="sks4" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 5</label><input type="number" id="sks5" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 6</label><input type="number" id="sks6" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 7</label><input type="number" id="sks7" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+                <div><label class="block text-[11px] font-semibold text-slate-600 mb-1">Sem 8</label><input type="number" id="sks8" class="field py-1.5 px-2 text-sm text-center" min="12" max="24" value="18" /></div>
+              </div>
             </div>
 
             <label class="flex items-start gap-3 p-4 rounded-2xl border border-slate-200 hover:border-ut-200 hover:bg-ut-50/30 transition cursor-pointer">
@@ -247,7 +253,7 @@
 
               <div class="grid sm:grid-cols-2 gap-3 mt-4">
                 <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><p class="text-xs text-blue-300">Semester pertama</p><p id="resFirstSemester" class="font-display text-xl font-extrabold money mt-2">Rp 0</p></div>
-                <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><p class="text-xs text-blue-300">Tarif kuliah / semester</p><p id="resSemesterOnly" class="font-display text-xl font-extrabold money mt-2">Rp 0</p></div>
+                <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><p class="text-xs text-blue-300">Tarif kuliah / semester (Est)</p><p id="resSemesterOnly" class="font-display text-xl font-extrabold money mt-2">Rp 0</p></div>
               </div>
 
               <div class="mt-5 p-5 rounded-2xl bg-gold text-ut-950 shadow-lg shadow-black/10">
@@ -406,8 +412,7 @@
     const selProdi = document.getElementById('selProdi');
     const selLayanan = document.getElementById('selLayanan');
     const sksContainer = document.getElementById('sksContainer');
-    const jmlSks = document.getElementById('jmlSks');
-    const jmlSksLabel = document.getElementById('jmlSksLabel');
+    const sksInputs = Array.from({length: 8}, (_, i) => document.getElementById(`sks${i+1}`));
     const isNewStudent = document.getElementById('isNewStudent');
     const emptyState = document.getElementById('emptyState');
     const resultState = document.getElementById('resultState');
@@ -471,37 +476,59 @@
       sksContainer.classList.toggle('hidden', selLayanan.value !== 'non_sipas');
       calculate();
     });
-    jmlSks.addEventListener('input', e => { jmlSksLabel.textContent = `${e.target.value} SKS`; calculate(); });
+    
+    sksInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const semIndex = parseInt(input.id.replace('sks', ''));
+        const maxSks = semIndex <= 2 ? 20 : 24;
+        let val = parseInt(input.value) || 0;
+        if (val > maxSks) input.value = maxSks;
+        if (val < 0) input.value = 0;
+        calculate();
+      });
+    });
+
     isNewStudent.addEventListener('change', calculate);
 
     function calculate() {
       if (!selProdi.value || !selLayanan.value) { resetResult(); return; }
       const prodiObj = PRODI_DATA.find(p => p.id == selProdi.value);
-      const sks = parseInt(jmlSks.value, 10);
       const isNew = isNewStudent.checked;
       const schemeObj = LAYANAN_OPTIONS.find(x => x.id === selLayanan.value);
+      
       let baseFee = 0;
+      let firstSemesterTotal = 0;
+      let eightSemesterTotal = 0;
+      const adminFee = isNew ? ADMIN_FEES.pendaftaran : 0;
 
       if (selLayanan.value === 'non_sipas') {
-        baseFee = prodiObj.sksFee * sks;
+        let totalSks = 0;
+        sksInputs.forEach(input => totalSks += (parseInt(input.value) || 0));
+        let sem1Sks = parseInt(document.getElementById('sks1').value) || 0;
+
+        baseFee = sem1Sks * prodiObj.sksFee;
+        firstSemesterTotal = baseFee + adminFee;
+        eightSemesterTotal = (totalSks * prodiObj.sksFee) + adminFee;
+
         resTypeLabel.textContent = 'Uang Kuliah (Non-SIPAS)';
-        resDetailLabel.textContent = `${sks} SKS × ${formatRp(prodiObj.sksFee)} / SKS`;
+        resDetailLabel.textContent = `Total ${totalSks} SKS (8 Semester)`;
         sksTariffContainer.classList.remove('hidden');
         sksTariffContainer.classList.add('flex');
         resSksTariff.textContent = `${formatRp(prodiObj.sksFee)} / SKS`;
         resCostNote.textContent = '* Belum termasuk biaya bahan ajar cetak dan biaya pengiriman.';
+        resEightDetail.textContent = `Berdasarkan total ${totalSks} SKS${adminFee > 0 ? ' + Pendaftaran' : ''}`;
       } else {
         baseFee = prodiObj[selLayanan.value];
+        firstSemesterTotal = baseFee + adminFee;
+        eightSemesterTotal = (baseFee * 8) + adminFee;
+
         resTypeLabel.textContent = 'Uang Kuliah (SIPAS)';
         resDetailLabel.textContent = schemeObj ? schemeObj.name : 'Paket Semester';
         sksTariffContainer.classList.add('hidden');
         sksTariffContainer.classList.remove('flex');
         resCostNote.textContent = '* Belum termasuk biaya pengiriman dan biaya lain yang bersifat kondisional.';
+        resEightDetail.textContent = `${formatRp(baseFee)} × 8${adminFee > 0 ? ' + Biaya Pendaftaran' : ''}`;
       }
-
-      const adminFee = isNew ? ADMIN_FEES.pendaftaran : 0;
-      const firstSemesterTotal = baseFee + adminFee;
-      const eightSemesterTotal = (baseFee * 8) + adminFee;
 
       document.getElementById('resAdminFee').textContent = formatRp(adminFee);
       adminFeeContainer.classList.toggle('hidden', adminFee === 0);
@@ -511,7 +538,6 @@
       resFirstSemester.textContent = formatRp(firstSemesterTotal);
       resTotalFee.textContent = formatRp(eightSemesterTotal);
       resEightFee.textContent = formatRp(eightSemesterTotal);
-      resEightDetail.textContent = `${formatRp(baseFee)} × 8${adminFee > 0 ? ' + Biaya Pendaftaran' : ''}`;
 
       const faculty = FACULTIES.find(f => f.id === prodiObj.faculty);
       summaryFaculty.textContent = faculty ? faculty.id : prodiObj.faculty;
@@ -528,13 +554,15 @@
       selLayanan.innerHTML = '<option value="">Pilih skema layanan</option>';
       selProdi.disabled = true;
       selLayanan.disabled = true;
-      jmlSks.value = 18;
-      jmlSksLabel.textContent = '18 SKS';
+      
+      sksInputs.forEach(input => input.value = 18);
+      
       isNewStudent.checked = true;
       sksContainer.classList.add('hidden');
       resetResult();
       selFakultas.focus();
     });
+    
     document.getElementById('printBtn').addEventListener('click', () => window.print());
 
     function showToast(text) {
@@ -555,9 +583,9 @@
         `Program Studi: ${prodi?.name || '-'}`,
         `Skema: ${scheme?.name || '-'}`,
         `Semester pertama: ${resFirstSemester.textContent}`,
-        `Tarif kuliah per semester: ${resSemesterOnly.textContent}`,
+        `Tarif kuliah per semester (Est): ${resSemesterOnly.textContent}`,
         `Proyeksi 8 semester: ${resTotalFee.textContent}`,
-        'Catatan: proyeksi 8 semester mengasumsikan tarif semester terpilih tetap sama.'
+        'Catatan: proyeksi 8 semester mengasumsikan tarif semester terpilih atau SKS yang diinput tetap.'
       ].join('\n');
       try { await navigator.clipboard.writeText(text); showToast('Ringkasan simulasi disalin.'); }
       catch { showToast('Browser tidak mengizinkan penyalinan otomatis.'); }
